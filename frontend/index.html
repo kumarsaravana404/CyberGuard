@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberGuard Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div class="logo">
+          <i class="fas fa-shield-alt"></i> CyberGuard
+        </div>
+        <ul class="nav-links">
+          <li class="active" data-tab="dashboard"><i class="fas fa-chart-line"></i> Dashboard</li>
+          <li data-tab="scanner"><i class="fas fa-search"></i> Port Scanner</li>
+          <li data-tab="network"><i class="fas fa-network-wired"></i> Network Map</li>
+          <li data-tab="firewall"><i class="fas fa-fire-alt"></i> Firewall</li>
+          <li data-tab="text-analysis"><i class="fas fa-code"></i> Code Analysis</li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header>
+          <h1 id="pageTitle">Live Dashboard</h1>
+          <div class="status-indicator">
+            <span class="dot"></span> System Online
+          </div>
+        </header>
+
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
+          <div class="stats-grid">
+            <div class="card">
+              <h3>Threat Level</h3>
+              <div class="big-number" id="threatScore">0</div>
+            </div>
+            <div class="card">
+              <h3>Active Devices</h3>
+              <div class="big-number" id="activeDevices">0</div>
+            </div>
+            <div class="card">
+              <h3>Packets/Sec</h3>
+              <div class="big-number" id="packetRate">0</div>
+            </div>
+          </div>
+          <div class="chart-container card">
+            <canvas id="trafficChart"></canvas>
+          </div>
+          <div class="log-container card">
+            <h3>Live Traffic Log</h3>
+            <div id="trafficLog" class="terminal-output"></div>
+          </div>
+        </div>
+
+        <!-- Port Scanner View -->
+        <div id="scanner" class="view hidden">
+          <div class="card">
+            <h2>Port Scanner</h2>
+            <div class="input-group">
+              <input type="text" id="scanHost" placeholder="Target IP (e.g., localhost)" value="localhost">
+              <button id="startScanBtn">Start Scan</button>
+            </div>
+            <div id="scanResults" class="terminal-output"></div>
+          </div>
+        </div>
+
+        <!-- Network View -->
+        <div id="network" class="view hidden">
+          <div class="card">
+            <h2>Network Devices (ARP)</h2>
+            <button id="refreshNetworkBtn">Refresh Network</button>
+            <div id="networkList" class="device-list"></div>
+          </div>
+        </div>
+
+        <!-- Firewall View -->
+        <div id="firewall" class="view hidden">
+          <div class="card">
+            <h2>Firewall Rule Analyzer</h2>
+            <textarea id="firewallRules" placeholder='[{"action": "ALLOW", "port": "ANY", "source": "ANY"}]'></textarea>
+            <button id="checkFirewallBtn">Analyze Rules</button>
+            <div id="firewallResults"></div>
+          </div>
+        </div>
+
+        <!-- Text Analysis View -->
+        <div id="text-analysis" class="view hidden">
+           <div class="card">
+            <h2>Code/Text Analysis</h2>
+            <textarea id="inputText" placeholder="Enter text or code to scan for vulnerabilities..."></textarea>
+            <button id="analyzeTextBtn">Analyze</button>
+            <div id="textResults"></div>
+           </div>
+        </div>
+
+      </main>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
