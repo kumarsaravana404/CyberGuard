@@ -1,0 +1,21 @@
+body {
+  background: #020617;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding: 40px;
+}
+
+textarea {
+  width: 80%;
+  height: 120px;
+}
+
+#status {
+  margin: 10px;
+  font-weight: bold;
+}
+
+.safe { color: #22c55e; }
+.warn { color: #facc15; }
+.danger { color: #ef4444; }
