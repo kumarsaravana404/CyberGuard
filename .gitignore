@@ -50,3 +50,8 @@ coverage/
 *.bak
 *.old
 check-users.js
+
+# Vercel
+.vercel
+.vercel/*
+*.vercel.json.backup

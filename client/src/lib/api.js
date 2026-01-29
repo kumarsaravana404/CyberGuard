@@ -3,7 +3,11 @@ import axios from 'axios';
 // Create a centralized Axios instance
 // This enhances maintainability by defining the Base URL and default headers in one place.
 const api = axios.create({
-    baseURL: 'http://localhost:5000', // Hardcoded fallback for dev; ideally process.env.VITE_API_URL
+    baseURL: import.meta.env.VITE_API_URL || (
+        window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000' 
+            : '/api'
+    ),
     headers: {
         'Content-Type': 'application/json',
     },
