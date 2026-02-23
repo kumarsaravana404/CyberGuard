@@ -1,106 +1,941 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CyberGuard Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
     <div class="app-container">
-      <!-- Sidebar -->
-      <nav class="sidebar">
-        <div class="logo">
-          <i class="fas fa-shield-alt"></i> CyberGuard
-        </div>
-        <ul class="nav-links">
-          <li class="active" data-tab="dashboard"><i class="fas fa-chart-line"></i> Dashboard</li>
-          <li data-tab="scanner"><i class="fas fa-search"></i> Port Scanner</li>
-          <li data-tab="network"><i class="fas fa-network-wired"></i> Network Map</li>
-          <li data-tab="firewall"><i class="fas fa-fire-alt"></i> Firewall</li>
-          <li data-tab="text-analysis"><i class="fas fa-code"></i> Code Analysis</li>
-        </ul>
-      </nav>
-
-      <!-- Main Content -->
-      <main class="main-content">
-        <header>
-          <h1 id="pageTitle">Live Dashboard</h1>
-          <div class="status-indicator">
-            <span class="dot"></span> System Online
+      <!-- AUTHENTICATION PORTAL (Hidden by default) -->
+      <div id="auth-portal" class="view full-view hidden">
+        <div class="auth-header">
+          <div class="auth-logo">
+            <i class="fa-solid fa-shield"></i> CyberGuard
           </div>
-        </header>
-
-        <!-- Dashboard View -->
-        <div id="dashboard" class="view active">
-          <div class="stats-grid">
-            <div class="card">
-              <h3>Threat Level</h3>
-              <div class="big-number" id="threatScore">0</div>
+          <div class="auth-nav">
+            <span>Security Analytics</span>
+            <span>Documentation</span>
+            <span>Support</span>
+            <div class="status-pill">
+              <span class="dot pulse"></span> Nodes Active
             </div>
-            <div class="card">
-              <h3>Active Devices</h3>
-              <div class="big-number" id="activeDevices">0</div>
-            </div>
-            <div class="card">
-              <h3>Packets/Sec</h3>
-              <div class="big-number" id="packetRate">0</div>
-            </div>
-          </div>
-          <div class="chart-container card">
-            <canvas id="trafficChart"></canvas>
-          </div>
-          <div class="log-container card">
-            <h3>Live Traffic Log</h3>
-            <div id="trafficLog" class="terminal-output"></div>
+            <div class="user-pill"><i class="fa-solid fa-user"></i></div>
           </div>
         </div>
 
-        <!-- Port Scanner View -->
-        <div id="scanner" class="view hidden">
-          <div class="card">
-            <h2>Port Scanner</h2>
+        <div class="auth-center">
+          <div class="auth-icon-large">
+            <i class="fa-solid fa-fingerprint"></i>
+          </div>
+          <h2 class="auth-title">Authentication Portal</h2>
+          <div class="auth-badge">
+            <i class="fa-solid fa-lock"></i> END-TO-END ENCRYPTED
+          </div>
+
+          <div class="auth-card">
+            <div class="auth-tabs">
+              <button class="active">Sign In</button>
+              <button>Create Account</button>
+            </div>
+
             <div class="input-group">
-              <input type="text" id="scanHost" placeholder="Target IP (e.g., localhost)" value="localhost">
-              <button id="startScanBtn">Start Scan</button>
+              <label>TERMINAL ID / USERNAME</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-at"></i>
+                <input
+                  type="text"
+                  placeholder="e.g. admin_alpha_01"
+                  value="Admin_User"
+                />
+              </div>
             </div>
-            <div id="scanResults" class="terminal-output"></div>
+
+            <div class="input-group">
+              <label
+                >SECURITY KEY <span class="forgot">Forgot Key?</span></label
+              >
+              <div class="input-wrapper">
+                <i class="fa-solid fa-key"></i>
+                <input type="password" value="............" />
+                <i class="fa-solid fa-eye btn-view"></i>
+              </div>
+            </div>
+
+            <div class="checkbox-group">
+              <input type="checkbox" id="keep_session" checked />
+              <label for="keep_session">Keep session active for 12 hours</label>
+            </div>
+
+            <button
+              class="btn btn-primary btn-block btn-lg"
+              id="initSessionBtn"
+            >
+              Initialize Session <i class="fa-solid fa-bolt"></i>
+            </button>
+
+            <div class="divider">HARDWARE AUTH</div>
+
+            <div class="auth-hardware-grid">
+              <button class="btn btn-outline">
+                <i class="fa-brands fa-usb"></i> U2F Key
+              </button>
+              <button class="btn btn-outline">
+                <i class="fa-solid fa-qrcode"></i> Auth App
+              </button>
+            </div>
+          </div>
+
+          <div class="version-banner">
+            <div class="version-icon">
+              <!-- Inline SVG for version icon or text -->
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <div class="version-info">
+              <h4>CyberGuard v4.2.0</h4>
+              <p>Security Analytics & Steganographic Shield active.</p>
+            </div>
+            <i class="fa-solid fa-circle-info version-info-icon"></i>
           </div>
         </div>
 
-        <!-- Network View -->
-        <div id="network" class="view hidden">
-          <div class="card">
-            <h2>Network Devices (ARP)</h2>
-            <button id="refreshNetworkBtn">Refresh Network</button>
-            <div id="networkList" class="device-list"></div>
+        <div class="auth-footer">
+          <div class="left-status">
+            <span class="dot blue"></span> SYSTEM STATUS: OPERATIONAL
+            &nbsp;&nbsp;&nbsp; LATENCY: 24MS
+          </div>
+          <div class="right-links">
+            <span>Privacy Policy</span>
+            <span>Terms of Service</span>
+            <span>© 2024 CyberGuard Systems Inc.</span>
           </div>
         </div>
+      </div>
+      <!-- END AUTHENTICATION PORTAL -->
 
-        <!-- Firewall View -->
-        <div id="firewall" class="view hidden">
-          <div class="card">
-            <h2>Firewall Rule Analyzer</h2>
-            <textarea id="firewallRules" placeholder='[{"action": "ALLOW", "port": "ANY", "source": "ANY"}]'></textarea>
-            <button id="checkFirewallBtn">Analyze Rules</button>
-            <div id="firewallResults"></div>
+      <!-- MAIN APP LAYOUT (Sidebar + Top Navbar + Context Views) -->
+      <div id="main-layout" class="layout active">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar modern-sidebar">
+          <div class="sidebar-header">
+            <div class="logo">
+              <div class="logo-shield"><i class="fa-solid fa-shield"></i></div>
+              <span>CyberGuard</span>
+            </div>
           </div>
-        </div>
 
-        <!-- Text Analysis View -->
-        <div id="text-analysis" class="view hidden">
-           <div class="card">
-            <h2>Code/Text Analysis</h2>
-            <textarea id="inputText" placeholder="Enter text or code to scan for vulnerabilities..."></textarea>
-            <button id="analyzeTextBtn">Analyze</button>
-            <div id="textResults"></div>
-           </div>
-        </div>
+          <ul class="nav-links">
+            <li class="nav-item active" data-tab="dashboard">
+              <i class="fa-solid fa-chart-pie"></i> Analytics Center
+            </li>
+            <li class="nav-item" data-tab="steganography">
+              <i class="fa-solid fa-eye-slash"></i> Steganography
+            </li>
+            <li class="nav-item" data-tab="vault">
+              <i class="fa-solid fa-vault"></i> Security Overview
+            </li>
 
-      </main>
+            <!-- Legacy tabs folded into a sub-menu or just kept as nav items -->
+            <li class="nav-section">TOOLS</li>
+            <li class="nav-item" data-tab="network">
+              <i class="fa-solid fa-network-wired"></i> Network Monitor
+            </li>
+            <li class="nav-item" data-tab="text-analysis">
+              <i class="fa-solid fa-virus"></i> Threat Intel
+            </li>
+            <li class="nav-item" data-tab="scanner">
+              <i class="fa-solid fa-server"></i> Asset Inventory
+            </li>
+            <li class="nav-item" data-tab="firewall">
+              <i class="fa-solid fa-shield-halved"></i> Firewall Config
+            </li>
+          </ul>
+
+          <div class="sidebar-bottom">
+            <div class="data-usage">
+              <div class="usage-header">
+                <span>DATA USAGE</span>
+                <span class="percent">78%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 78%"></div>
+              </div>
+              <div class="usage-text">12.4 GB of 16 GB used</div>
+            </div>
+            <button class="btn-signout" id="signOutBtn">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+            </button>
+          </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content modern-main">
+          <!-- Topbar -->
+          <header class="topbar">
+            <div class="topbar-left">
+              <h1 id="pageTitle" class="hidden">Dashboard</h1>
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="text"
+                  placeholder="Search IP, threat, or logs..."
+                />
+                <span class="slash-key">/</span>
+              </div>
+            </div>
+            <div class="topbar-right">
+              <div class="status-indicator">
+                <span class="dot green"></span> SYSTEM LIVE
+              </div>
+              <button class="icon-btn notification-btn">
+                <i class="fa-solid fa-bell"></i>
+                <span class="badge">3</span>
+              </button>
+              <div class="user-profile">
+                <div class="user-info text-right">
+                  <strong>Admin_User</strong>
+                  <small>Security Architect</small>
+                </div>
+                <div class="avatar">
+                  <img src="https://i.pravatar.cc/150?u=admin" alt="Admin" />
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <!-- ==============================
+               VIEW: ANALYTICS CENTER (Dashboard) 
+               ============================== -->
+          <div id="dashboard" class="view content-view active">
+            <!-- Top Metrics Cards -->
+            <div class="metrics-row">
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span>THREATS BLOCKED</span>
+                  <div class="icon-box green">
+                    <i class="fa-solid fa-shield-check"></i>
+                  </div>
+                </div>
+                <div class="metric-value">2,842</div>
+                <div class="metric-trend green">
+                  <i class="fa-solid fa-arrow-trend-up"></i> +12.4%
+                  <span class="muted">from last 24h</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span>ACTIVE SESSIONS</span>
+                  <div class="icon-box blue">
+                    <i class="fa-solid fa-users"></i>
+                  </div>
+                </div>
+                <div class="metric-value">142</div>
+                <div class="metric-trend green">
+                  <i class="fa-solid fa-arrow-trend-up"></i> +5.2%
+                  <span class="muted">real-time count</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span>AVG RESPONSE</span>
+                  <div class="icon-box orange">
+                    <i class="fa-solid fa-bolt"></i>
+                  </div>
+                </div>
+                <div class="metric-value">14ms</div>
+                <div class="metric-trend red">
+                  <i class="fa-solid fa-arrow-trend-down"></i> -3ms
+                  <span class="muted">latency spike detected</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span>SYSTEM INTEGRITY</span>
+                  <div class="icon-box blue">
+                    <i class="fa-solid fa-truck-medical"></i>
+                  </div>
+                </div>
+                <div class="metric-value">99.9%</div>
+                <div class="metric-trend text-muted">
+                  Stable <span class="muted">last audit: 2h ago</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-grid-main">
+              <!-- Left Column -->
+              <div class="grid-left">
+                <!-- Network Activity Chart -->
+                <div class="modern-card chart-card">
+                  <div class="card-header-flex">
+                    <div>
+                      <h3>Network Activity</h3>
+                      <p class="muted">
+                        Live outbound/inbound traffic monitoring
+                      </p>
+                    </div>
+                    <div class="btn-group">
+                      <button class="btn-sm active">1H</button>
+                      <button class="btn-sm">24H</button>
+                      <button class="btn-sm">7D</button>
+                    </div>
+                  </div>
+                  <div class="chart-container">
+                    <canvas id="trafficChart"></canvas>
+                  </div>
+                </div>
+
+                <!-- Access Logs -->
+                <div class="modern-card table-card">
+                  <div class="card-header-flex">
+                    <div>
+                      <h3>Access Logs</h3>
+                      <p class="muted">
+                        Recent entry and authentication attempts
+                      </p>
+                    </div>
+                    <div class="btn-group-outline">
+                      <button class="btn-outline-sm">
+                        <i class="fa-solid fa-filter"></i> Filter
+                      </button>
+                      <button class="btn-outline-sm">
+                        <i class="fa-solid fa-download"></i> Export
+                      </button>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="modern-table" id="accessLogsTable">
+                      <thead>
+                        <tr>
+                          <th>TIMESTAMP</th>
+                          <th>SOURCE IP</th>
+                          <th>DESTINATION</th>
+                          <th>ACTION</th>
+                          <th>LOCATION</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>2023-10-24 14:22:18</td>
+                          <td>
+                            <span class="dot red-dot"></span> 192.168.1.104
+                          </td>
+                          <td>Internal DB #04</td>
+                          <td>
+                            <span class="badge badge-danger">DENIED</span>
+                          </td>
+                          <td>
+                            <i class="fa-solid fa-location-dot"></i> Frankfurt,
+                            DE
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>2023-10-24 14:21:05</td>
+                          <td><span class="dot green-dot"></span> 10.0.0.45</td>
+                          <td>Web Cluster #12</td>
+                          <td>
+                            <span class="badge badge-success">ALLOWED</span>
+                          </td>
+                          <td>
+                            <i class="fa-solid fa-location-dot"></i> New York,
+                            US
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>2023-10-24 14:19:42</td>
+                          <td>
+                            <span class="dot blue-dot"></span> 172.16.254.1
+                          </td>
+                          <td>Gateway-Primary</td>
+                          <td><span class="badge badge-blue">FLAGGED</span></td>
+                          <td>
+                            <i class="fa-solid fa-location-dot"></i> London, UK
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column -->
+              <div class="grid-right">
+                <!-- Threat Level -->
+                <div class="modern-card threat-card">
+                  <h3>Threat Level</h3>
+                  <p class="muted">Aggregated security posture</p>
+
+                  <div class="threat-dial">
+                    <!-- CSS drawn dial -->
+                    <div class="dial-container">
+                      <div class="dial-arc blue-arc"></div>
+                      <div class="dial-info">
+                        <span class="dial-sub">CURRENT RISK</span>
+                        <h2 class="dial-main text-blue" id="threatScoreDisplay">
+                          MODERATE
+                        </h2>
+                        <span class="dial-score">Score: 42/100</span>
+                      </div>
+                    </div>
+                    <div class="dial-legend">
+                      <span><span class="dot green"></span> LOW</span>
+                      <span><span class="dot blue"></span> MODERATE</span>
+                      <span><span class="dot orange"></span> HIGH</span>
+                      <span><span class="dot red"></span> CRITICAL</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-outline-danger btn-block mt-4">
+                    Initiate Lockdown
+                  </button>
+                </div>
+
+                <!-- Alerts -->
+                <div class="recent-alerts">
+                  <div class="alert-header">
+                    <h3>REAL-TIME ALERTS</h3>
+                    <span class="badge-red-pill">12 NEW</span>
+                  </div>
+                  <div class="alert-feed">
+                    <div class="alert-item alert-red">
+                      <div class="ai-header">
+                        <span class="ai-type">BRUTE FORCE</span>
+                        <span class="ai-time">2m ago</span>
+                      </div>
+                      <h4>Repeated Login Failures</h4>
+                      <p>
+                        Source IP 103.22.4.19 attempted root access on Cluster_B
+                        15 times.
+                      </p>
+                      <div class="ai-actions">
+                        <button class="btn-sm btn-danger">BLOCK IP</button>
+                        <button class="btn-sm btn-dark">DISMISS</button>
+                      </div>
+                    </div>
+
+                    <div class="alert-item alert-orange">
+                      <div class="ai-header">
+                        <span class="ai-type">POLICY VIOLATION</span>
+                        <span class="ai-time">14m ago</span>
+                      </div>
+                      <h4>Unauthorized Data Export</h4>
+                      <p>
+                        Large outbound transfer (4.2GB) detected from User_82 to
+                        external S3.
+                      </p>
+                    </div>
+
+                    <div class="alert-item alert-blue">
+                      <div class="ai-header">
+                        <span class="ai-type">SYS LOG</span>
+                        <span class="ai-time">28m ago</span>
+                      </div>
+                      <h4>Scheduled Audit Complete</h4>
+                      <p>
+                        System integrity check finished. No anomalies found in
+                        kernel modules.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- END ANALYTICS VIEW -->
+
+          <!-- ==============================
+               VIEW: STEGANOGRAPHY STUDIO
+               ============================== -->
+          <div id="steganography" class="view content-view hidden">
+            <div class="view-header">
+              <div class="breadcrumbs">
+                SECURITY TOOLS <i class="fa-solid fa-chevron-right"></i>
+                <span class="current">STEGANOGRAPHY STUDIO</span>
+              </div>
+              <div class="vh-flex">
+                <div>
+                  <h2>Steganography Studio</h2>
+                  <p class="muted">
+                    Module: LSB Encoding & XOR Encryption Engine
+                  </p>
+                </div>
+                <div class="btn-group">
+                  <button class="btn btn-outline">
+                    <i class="fa-solid fa-book"></i> Documentation
+                  </button>
+                  <button class="btn btn-primary">
+                    <i class="fa-solid fa-gear"></i> Algorithm Settings
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="steg-grid">
+              <!-- Step 1 -->
+              <div class="modern-card steg-card">
+                <div class="sc-header">
+                  <h3>
+                    <i class="fa-regular fa-image text-blue"></i> 1. Source
+                    Image
+                  </h3>
+                  <span class="badge badge-blue">REQUIRED</span>
+                </div>
+                <div class="drag-drop-zone" id="stegDropZone">
+                  <div class="icon-circle bg-blue-light text-blue">
+                    <i class="fa-solid fa-file-arrow-up"></i>
+                  </div>
+                  <h4>Drag and drop source file</h4>
+                  <p>Supports PNG (Lossless) and JPG formats. Max size 24MB.</p>
+                  <button class="btn btn-outline-blue mt-3">
+                    BROWSE STORAGE
+                  </button>
+                </div>
+                <div class="steg-meta">
+                  <div class="sm-row">
+                    <span>Dimensions</span> <span class="mono">-- x -- px</span>
+                  </div>
+                  <div class="sm-row">
+                    <span>Payload Capacity</span>
+                    <span class="mono text-blue">0.0 KB</span>
+                  </div>
+                  <div class="sm-row">
+                    <span>File Integrity</span>
+                    <span class="text-green"
+                      ><i class="fa-solid fa-check-circle"></i> Optimized</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="modern-card steg-card">
+                <div class="sc-header">
+                  <h3>
+                    <i class="fa-solid fa-key text-blue"></i> 2. Payload
+                    Configuration
+                  </h3>
+                </div>
+                <div class="form-group flex-fill">
+                  <label>SECRET MESSAGE</label>
+                  <textarea
+                    class="steg-textarea"
+                    placeholder="Enter the secret message to be encoded into the image LSBs..."
+                  ></textarea>
+                  <div class="char-count text-right muted mono text-sm mb-3">
+                    0 / 25,000 chars
+                  </div>
+                </div>
+                <div class="form-group mb-4">
+                  <label
+                    >XOR KEY (OPTIONAL)
+                    <i class="fa-solid fa-circle-info muted"></i
+                  ></label>
+                  <div class="input-wrapper transparent-input">
+                    <i class="fa-solid fa-lock text-blue"></i>
+                    <input
+                      type="password"
+                      placeholder="Enter encryption password..."
+                    />
+                  </div>
+                </div>
+                <div class="method-grid">
+                  <div class="method-box active">
+                    <span class="muted text-xs">METHOD</span>
+                    <strong>LSB 1-Bit</strong>
+                  </div>
+                  <div class="method-box">
+                    <span class="muted text-xs">COLOR PLANE</span>
+                    <strong>RGB-Alpha</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="modern-card steg-card">
+                <div class="sc-header">
+                  <h3>
+                    <i class="fa-solid fa-microchip text-blue"></i> 3.
+                    Processing Hub
+                  </h3>
+                </div>
+                <div class="processing-hub flex-fill">
+                  <div class="empty-state text-center">
+                    <div class="icon-large muted">
+                      <i class="fa-solid fa-eye-slash text-darken"></i>
+                    </div>
+                    <p class="muted mt-3">
+                      Awaiting processing configuration...
+                    </p>
+                  </div>
+                  <!-- Controls that appear later -->
+                  <div class="preview-actions hidden">
+                    <button class="icon-btn-bordered">
+                      <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </button>
+                    <button class="icon-btn-bordered">
+                      <i class="fa-solid fa-expand"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="process-meta mb-3 mt-3">
+                  <div
+                    class="pm-row display-flex justify-between text-xs muted mb-1"
+                  >
+                    <span>DETECTABILITY SCORE</span>
+                    <span>ENTROPY SHIFT</span>
+                  </div>
+                  <div
+                    class="progress-bar thin bg-dark border-radius mt-1 mb-1"
+                  >
+                    <div class="progress-fill bg-green w-15"></div>
+                  </div>
+                  <div class="pm-row display-flex justify-between text-xs">
+                    <span class="text-green">LOW (Safe)</span>
+                    <span class="text-blue mono">+0.002%</span>
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-block btn-lg glow-blue">
+                  <i class="fa-solid fa-microchip"></i> Process & Download
+                  Encoded Image
+                </button>
+              </div>
+            </div>
+
+            <!-- Terminal Log -->
+            <div class="modern-card terminal-card mt-4">
+              <div class="tc-header">
+                <span><span class="dot blue"></span> LIVE SYSTEM LOGS</span>
+              </div>
+              <div class="terminal-body mono text-sm" id="stegLogs">
+                <div class="log-line">
+                  <span class="text-blue">[14:20:05]</span> SYSTEM: Initializing
+                  LSB-Module-v4.0.2...
+                </div>
+                <div class="log-line">
+                  <span class="text-blue">[14:20:06]</span> SEC: Waiting for
+                  source image buffer...
+                </div>
+                <div class="log-line">
+                  <span class="text-blue">[14:20:10]</span> XOR: Ready for
+                  encryption key input.
+                </div>
+                <div class="log-line text-muted">
+                  [14:21:42] INFO: Listening for Drag & Drop event...
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- END STEGANOGRAPHY VIEW -->
+
+          <!-- ==============================
+               VIEW: VAULT / SECURITY OVERVIEW
+               ============================== -->
+          <div id="vault" class="view content-view hidden">
+            <div class="view-header">
+              <div class="vh-flex">
+                <div>
+                  <h2>Security Overview</h2>
+                  <p class="muted">
+                    Welcome back, Alex. Your system integrity is currently at
+                    optimal levels.
+                  </p>
+                </div>
+                <button class="btn btn-primary">
+                  <i class="fa-solid fa-arrows-rotate"></i> Start Global Scan
+                </button>
+              </div>
+            </div>
+
+            <div class="vault-overview-metrics mt-4">
+              <div class="modern-card ring-card">
+                <div class="ring-container">
+                  <div
+                    class="ring-circle"
+                    style="
+                      background: conic-gradient(
+                        var(--accent-blue) 85%,
+                        var(--bg-dark) 0
+                      );
+                    "
+                  >
+                    <div class="ring-inner">85%</div>
+                  </div>
+                </div>
+                <div class="ring-info">
+                  <div class="text-xs muted tracking-wide">
+                    PROTECTION LEVEL
+                  </div>
+                  <h3>Robust</h3>
+                  <div class="text-green text-sm">
+                    <i class="fa-solid fa-arrow-trend-up"></i> +2.4% today
+                  </div>
+                </div>
+                <div class="bg-icon">
+                  <i class="fa-solid fa-shield-check"></i>
+                </div>
+              </div>
+
+              <div class="modern-card ring-card">
+                <div class="ring-container">
+                  <div
+                    class="ring-circle"
+                    style="
+                      background: conic-gradient(
+                        var(--accent-green) 100%,
+                        var(--bg-dark) 0
+                      );
+                    "
+                  >
+                    <div class="ring-inner">
+                      <i class="fa-solid fa-check text-green"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="ring-info">
+                  <div class="text-xs muted tracking-wide">THREAT ANALYSIS</div>
+                  <h3>Minimum</h3>
+                  <div class="muted text-sm">0 active threats</div>
+                </div>
+                <div class="bg-icon">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+              </div>
+
+              <div class="modern-card ring-card">
+                <div class="ring-container">
+                  <div
+                    class="ring-circle"
+                    style="
+                      background: conic-gradient(
+                        var(--accent-blue) 100%,
+                        var(--bg-dark) 0
+                      );
+                    "
+                  >
+                    <div class="ring-inner">100%</div>
+                  </div>
+                </div>
+                <div class="ring-info">
+                  <div class="text-xs muted tracking-wide">INTEGRITY</div>
+                  <h3>Stable</h3>
+                  <div class="text-blue text-sm">All modules verified</div>
+                </div>
+                <div class="bg-icon"><i class="fa-solid fa-code"></i></div>
+              </div>
+            </div>
+
+            <div class="vault-actions-grid mt-4">
+              <div class="modern-card">
+                <div class="card-header-flex">
+                  <h3 class="display-flex align-center gap-2">
+                    <i class="fa-solid fa-lock text-blue"></i> Encode Secret
+                    Message
+                  </h3>
+                  <span class="badge badge-border text-xs">LSB-ALGORITHM</span>
+                </div>
+                <div class="drag-drop-zone mt-3 mb-3">
+                  <i
+                    class="fa-solid fa-cloud-arrow-up icon-large text-muted"
+                  ></i>
+                  <p class="mt-2 text-sm muted">
+                    Drag image here or
+                    <span class="text-blue cursor-pointer">browse</span>
+                  </p>
+                </div>
+                <textarea
+                  class="steg-textarea mb-3"
+                  placeholder="Type secret message to hide..."
+                ></textarea>
+                <button class="btn btn-primary btn-block">
+                  Process & Download
+                </button>
+              </div>
+
+              <div class="modern-card">
+                <div class="card-header-flex">
+                  <h3 class="display-flex align-center gap-2">
+                    <i class="fa-solid fa-eye-slash text-blue"></i> Decode
+                    Hidden Data
+                  </h3>
+                  <span class="badge badge-border text-xs">DETECTION-MODE</span>
+                </div>
+                <div class="drag-drop-zone mt-3 mb-3 d-zone-decode">
+                  <i class="fa-regular fa-image icon-large text-muted"></i>
+                  <p class="mt-2 text-sm muted">Upload steg-image to analyze</p>
+                </div>
+                <div
+                  class="waiting-box mb-3 text-center p-4 border-dashed rounded text-muted italic bg-dark-opacity"
+                >
+                  Waiting for image analysis...
+                </div>
+                <button class="btn btn-outline-dark btn-block">
+                  <i class="fa-solid fa-magnifying-glass"></i> Scan for Metadata
+                </button>
+              </div>
+            </div>
+
+            <div class="modern-card table-card mt-4">
+              <div class="card-header-flex">
+                <h3>Recent Security Activity</h3>
+                <a href="#" class="text-blue text-sm">View All Logs</a>
+              </div>
+              <table class="modern-table">
+                <thead>
+                  <tr>
+                    <th>ACTIVITY</th>
+                    <th>TIMESTAMP</th>
+                    <th>ACTION BY</th>
+                    <th>STATUS</th>
+                    <th>REFERENCE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <i class="fa-solid fa-unlock-keyhole text-green mr-2"></i>
+                      Message Decoded
+                    </td>
+                    <td class="mono muted">2023-10-27 14:22:10</td>
+                    <td>Alex Rivera</td>
+                    <td><span class="badge badge-success">SUCCESS</span></td>
+                    <td class="mono muted">TX_0912-88</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <i class="fa-solid fa-shield text-blue mr-2"></i> Database
+                      Scan
+                    </td>
+                    <td class="mono muted">2023-10-27 12:45:00</td>
+                    <td>System Cron</td>
+                    <td><span class="badge badge-blue">COMPLETED</span></td>
+                    <td class="mono muted">SC_2120-X</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <i
+                        class="fa-solid fa-triangle-exclamation text-orange mr-2"
+                      ></i>
+                      Failed Authentication
+                    </td>
+                    <td class="mono muted">2023-10-27 11:30:15</td>
+                    <td>IP: 192.168.1.45</td>
+                    <td><span class="badge badge-warning">BLOCKED</span></td>
+                    <td class="mono muted">AUTH_ERR_01</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <i class="fa-solid fa-file-image text-muted mr-2"></i> New
+                      Stego-Image Created
+                    </td>
+                    <td class="mono muted">2023-10-27 09:15:22</td>
+                    <td>Alex Rivera</td>
+                    <td><span class="badge badge-dark">STORED</span></td>
+                    <td class="mono muted">IMG_0041-A</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- END VAULT VIEW -->
+
+          <!-- ==============================
+               LEGACY / ADDITIONAL VIEWS 
+               ============================== -->
+          <div id="network" class="view content-view hidden">
+            <div class="modern-card">
+              <h2>Network Devices (ARP)</h2>
+              <button id="refreshNetworkBtn" class="btn btn-primary mt-3 mb-3">
+                Refresh Network
+              </button>
+              <div id="networkList" class="device-list"></div>
+            </div>
+          </div>
+
+          <div id="scanner" class="view content-view hidden">
+            <div class="modern-card">
+              <h2>Asset Inventory & Port Scanner</h2>
+              <div class="input-group display-flex gap-2 mt-3 mb-3">
+                <input
+                  type="text"
+                  id="scanHost"
+                  placeholder="Target IP (e.g., localhost)"
+                  value="localhost"
+                  class="flex-fill p-2 rounded bg-dark border-dark text-white"
+                />
+                <button id="startScanBtn" class="btn btn-primary">
+                  Start Scan
+                </button>
+              </div>
+              <div
+                id="scanResults"
+                class="terminal-output p-3 rounded bg-black text-green mono mt-3"
+              ></div>
+            </div>
+          </div>
+
+          <div id="firewall" class="view content-view hidden">
+            <div class="modern-card">
+              <h2>Firewall Rule Analyzer</h2>
+              <textarea
+                id="firewallRules"
+                class="steg-textarea mt-3 mb-3"
+                placeholder='[{"action": "ALLOW", "port": "ANY", "source": "ANY"}]'
+              ></textarea>
+              <button id="checkFirewallBtn" class="btn btn-primary">
+                Analyze Rules
+              </button>
+              <div id="firewallResults" class="mt-3"></div>
+            </div>
+          </div>
+
+          <div id="text-analysis" class="view content-view hidden">
+            <div class="modern-card">
+              <h2>Threat Intel & Text Analysis</h2>
+              <textarea
+                id="inputText"
+                class="steg-textarea mt-3 mb-3"
+                placeholder="Enter text or code to scan for vulnerabilities..."
+              ></textarea>
+              <button id="analyzeTextBtn" class="btn btn-primary">
+                Analyze
+              </button>
+              <div id="textResults" class="mt-3"></div>
+            </div>
+          </div>
+
+          <div style="display: none">
+            <!-- Hidden original elements needed by JS -->
+            <div id="threatScore">0</div>
+            <div id="activeDevices">0</div>
+            <div id="packetRate">0</div>
+            <div id="trafficLog"></div>
+          </div>
+        </main>
+      </div>
     </div>
+
+    <!-- Helper scripts embedded for demo toggle -->
+    <script>
+      // Auth portal toggle logic for demo
+      document
+        .getElementById("initSessionBtn")
+        .addEventListener("click", () => {
+          document.getElementById("auth-portal").classList.add("hidden");
+          document.getElementById("main-layout").classList.remove("hidden");
+          document.getElementById("main-layout").classList.add("active");
+        });
+      // Show auth initially for demo or based on logic. Let's start with standard view.
+      // In production, check auth state. Setting it hidden above.
+    </script>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
