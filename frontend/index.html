@@ -18,7 +18,7 @@
   <body>
     <div class="app-container">
       <!-- AUTHENTICATION PORTAL (Hidden by default) -->
-      <div id="auth-portal" class="view full-view hidden">
+      <div id="auth-portal" class="view full-view">
         <div class="auth-header">
           <div class="auth-logo">
             <i class="fa-solid fa-shield"></i> CyberGuard
@@ -124,7 +124,7 @@
       <!-- END AUTHENTICATION PORTAL -->
 
       <!-- MAIN APP LAYOUT (Sidebar + Top Navbar + Context Views) -->
-      <div id="main-layout" class="layout active">
+      <div id="main-layout" class="layout hidden">
         <!-- Sidebar Navigation -->
         <nav class="sidebar modern-sidebar">
           <div class="sidebar-header">
@@ -922,20 +922,6 @@
         </main>
       </div>
     </div>
-
-    <!-- Helper scripts embedded for demo toggle -->
-    <script>
-      // Auth portal toggle logic for demo
-      document
-        .getElementById("initSessionBtn")
-        .addEventListener("click", () => {
-          document.getElementById("auth-portal").classList.add("hidden");
-          document.getElementById("main-layout").classList.remove("hidden");
-          document.getElementById("main-layout").classList.add("active");
-        });
-      // Show auth initially for demo or based on logic. Let's start with standard view.
-      // In production, check auth state. Setting it hidden above.
-    </script>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
