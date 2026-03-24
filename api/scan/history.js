@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
-
-// Temporary in-memory storage
-// Replace with MongoDB in production
-let scans = [];
+const dbConnect = require('../config/dbConnect');
+const Scan = require('../models/Scan');
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -34,11 +32,12 @@ module.exports = async (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
     
+    await dbConnect();
+
     // Get user's scans
-    const userScans = scans
-      .filter(scan => scan.user_id === decoded.id)
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      .slice(0, 10); // Last 10 scans
+    const userScans = await Scan.find({ user_id: decoded.id })
+      .sort({ created_at: -1 })
+      .limit(10);
 
     res.json({
       success: true,

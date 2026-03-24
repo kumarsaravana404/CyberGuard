@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
-
-// Temporary in-memory storage for scans
-// Replace with MongoDB in production
-let scans = [];
+const dbConnect = require('../config/dbConnect');
+const Scan = require('../models/Scan');
 
 const analyzeText = (text) => {
   const keywords = {
@@ -69,25 +67,25 @@ module.exports = async (req, res) => {
       return res.status(400).json({ message: 'Text is required' });
     }
 
+    await dbConnect();
+
     // Analyze the text
     const analysis = analyzeText(text);
 
     // Save scan result
-    const scan = {
-      id: scans.length + 1,
+    const scan = await Scan.create({
       user_id: decoded.id,
       input_text: text,
       risk_score: analysis.riskScore,
       threat_level: analysis.threatLevel,
       phishing_detected: analysis.phishingDetected,
-      created_at: new Date().toISOString()
-    };
-
-    scans.push(scan);
+    });
 
     res.json({
       success: true,
       ...analysis,
+      id: scan._id,
+      created_at: scan.created_at,
       message: 'Scan completed successfully'
     });
   } catch (error) {

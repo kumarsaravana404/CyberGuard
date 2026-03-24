@@ -1,10 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-// This will be replaced with MongoDB in production
-// For now, we'll use a temporary in-memory store (not persistent)
-// You MUST replace this with MongoDB Atlas or another cloud database
-let users = [];
+const dbConnect = require('../config/dbConnect');
+const User = require('../models/User');
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -32,8 +29,10 @@ module.exports = async (req, res) => {
   }
 
   try {
+    await dbConnect();
+
     // Find user
-    const user = users.find(u => u.email === email);
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -46,7 +45,7 @@ module.exports = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user._id, email: user.email },
       process.env.JWT_SECRET || 'your-secret-key-change-in-production',
       { expiresIn: '24h' }
     );
@@ -54,7 +53,7 @@ module.exports = async (req, res) => {
     res.json({
       success: true,
       token,
-      user: { id: user.id, email: user.email }
+      user: { id: user._id, email: user.email }
     });
   } catch (error) {
     console.error('Login error:', error);

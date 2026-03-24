@@ -1,10 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-// This will be replaced with MongoDB in production
-// For now, we'll use a temporary in-memory store (not persistent)
-// You MUST replace this with MongoDB Atlas or another cloud database
-let users = [];
+const dbConnect = require('../config/dbConnect');
+const User = require('../models/User');
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -42,29 +39,27 @@ module.exports = async (req, res) => {
     return res.status(400).json({ message: 'Invalid email format' });
   }
 
-  // Check if user already exists
-  const existingUser = users.find(u => u.email === email);
-  if (existingUser) {
-    return res.status(409).json({ message: 'Email already registered' });
-  }
-
   try {
+    await dbConnect();
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: 'Email already registered' });
+    }
+
     // Hash password
     const hash = await bcrypt.hash(password, 10);
 
     // Create new user
-    const newUser = {
-      id: users.length + 1,
+    const newUser = await User.create({
       email,
       password_hash: hash,
-      created_at: new Date().toISOString()
-    };
-
-    users.push(newUser);
+    });
 
     // Generate JWT
     const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
+      { id: newUser._id, email: newUser.email },
       process.env.JWT_SECRET || 'your-secret-key-change-in-production',
       { expiresIn: '24h' }
     );
@@ -72,7 +67,7 @@ module.exports = async (req, res) => {
     res.status(201).json({
       success: true,
       token,
-      user: { id: newUser.id, email: newUser.email },
+      user: { id: newUser._id, email: newUser.email },
       message: 'Registration successful'
     });
   } catch (error) {
